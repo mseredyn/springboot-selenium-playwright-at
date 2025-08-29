@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 
-@Configuration
-@Scope("singleton")
 @Lazy
 @DependsOn()
+@Configuration
+@Scope("singleton")
 public class PlaywrightConfig implements DisposableBean {
 
     @Value("${webdriver.debug}")
@@ -35,8 +35,8 @@ public class PlaywrightConfig implements DisposableBean {
     public Page getPage() {
         Playwright.CreateOptions createOptions = new Playwright.CreateOptions();
         playwright = Playwright.create(createOptions);
-        if (SeleniumCDP.getCdpCapability() != null) {
-            browser = playwright.chromium().connectOverCDP(SeleniumCDP.getCdpCapability());
+        if (SeleniumWebSocketAdapter.getCdpCapability() != null) {
+            browser = playwright.chromium().connectOverCDP(SeleniumWebSocketAdapter.getCdpCapability());
         } else {
             browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setChannel("chrome"));
         }
@@ -44,13 +44,13 @@ public class PlaywrightConfig implements DisposableBean {
         if (browser.contexts().isEmpty()) {
             browserContext = browser.newContext(new Browser.NewContextOptions());
         } else {
-            browserContext = browser.contexts().get(0);
+            browserContext = browser.contexts().getFirst();
         }
 
         if (browserContext.pages().isEmpty()) {
             page = browserContext.newPage();
         } else {
-            page = browserContext.pages().get(0);
+            page = browserContext.pages().getFirst();
         }
         return this.page;
     }

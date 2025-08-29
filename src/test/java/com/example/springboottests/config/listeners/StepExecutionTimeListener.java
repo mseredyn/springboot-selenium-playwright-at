@@ -39,7 +39,6 @@ public class StepExecutionTimeListener implements StepLifecycleListener {
             Long elapsed = result.getStop() - result.getStart();
             stepToTimeMap.computeIfAbsent(result.getName(), k -> Lists.newArrayList());
             stepToTimeMap.get(result.getName()).add(elapsed);
-            System.out.println(result.getName() + ": " + String.valueOf(elapsed));
             lastSum += elapsed;
             listOfSums.add(lastSum);
             listOfElapseds.add(elapsed);

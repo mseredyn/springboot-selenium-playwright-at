@@ -9,9 +9,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 
-@Configuration
-@Scope("singleton")
 @Lazy
+@Scope("singleton")
+@Configuration
 public class SeleniumConfig implements DisposableBean {
     private ChromeDriver driver;
 
@@ -25,8 +25,9 @@ public class SeleniumConfig implements DisposableBean {
         ChromeDriverService service = new ChromeDriverService.Builder().usingAnyFreePort().build();
         ChromeOptions options = new ChromeOptions();
         this.driver = new ChromeDriver(service, options);
-        SeleniumCDP.setCdpCapability(this.driver.getCapabilities().getCapability("se:cdp").toString());
+        SeleniumWebSocketAdapter.setCdpCapability(this.driver.getCapabilities().getCapability("se:cdp").toString());
 
         return this.driver;
     }
 }
+
