@@ -1,14 +1,15 @@
 package com.example.springboottests.pages;
 
+import com.example.springboottests.config.SeleniumConfig;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,8 @@ import java.time.Duration;
 
 @Lazy
 @Component
-@Scope("singleton")
+@Scope("thread-local")
+@ConditionalOnBean(WebDriver.class)
 public class BaseSeleniumPage {
     @Value("${base.url}")
     private String url;
@@ -26,11 +28,11 @@ public class BaseSeleniumPage {
     private String testSeed;
 
     @Autowired
-    private ChromeDriver driver;
+    private SeleniumConfig seleniumConfig;
 
     @Step
     protected WebElement getByUsingSelenium(String selector) {
-        return driver.findElement(byChooser(selector));
+        return seleniumConfig.getDriver().findElement(byChooser(selector));
     }
 
     @Step
@@ -56,13 +58,13 @@ public class BaseSeleniumPage {
 
     @Step
     protected void assertTextByUsingSelenium(String expected, String selector){
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        WebDriverWait wait = new WebDriverWait(seleniumConfig.getDriver(), Duration.ofSeconds(30));
         wait.until(ExpectedConditions.textToBe(byChooser(selector), expected));
     }
 
     @Step
     protected void navigateToExerciseUsingSelenium(String exerciseName) {
-        driver.get(url + exerciseName + "?seed=" + testSeed);
+        seleniumConfig.getDriver().get(url + exerciseName + "?seed=" + testSeed);
     }
 
     private static By byChooser(String locator){

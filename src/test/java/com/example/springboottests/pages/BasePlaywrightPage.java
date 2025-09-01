@@ -1,5 +1,6 @@
 package com.example.springboottests.pages;
 
+import com.example.springboottests.config.PlaywrightConfig;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import io.qameta.allure.Step;
@@ -13,18 +14,18 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 
 @Lazy
 @Component
-@Scope("singleton")
+@Scope("thread-local")
 public class BasePlaywrightPage {
     @Value("${base.url}")
     private String url;
     @Value("${test.seed}")
     private String testSeed;
     @Autowired
-    private Page page;
+    private PlaywrightConfig playwrightConfig;
 
     @Step
     protected Locator getByUsingPlaywright(String selector) {
-        Locator locator = page.locator(selector);
+        Locator locator = playwrightConfig.getPage().locator(selector);
         locator.scrollIntoViewIfNeeded();
         return locator;
     }
@@ -57,6 +58,6 @@ public class BasePlaywrightPage {
 
     @Step
     protected void navigateToExerciseUsingPlaywright(String exerciseName) {
-        page.navigate(url + exerciseName + "?seed=" + testSeed);
+        playwrightConfig.getPage().navigate(url + exerciseName + "?seed=" + testSeed);
     }
 }

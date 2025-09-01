@@ -32,6 +32,19 @@ public class StepExecutionTimeListener implements StepLifecycleListener {
         return result;
     }
 
+    public static List<Long> getTimeIncrements() {
+        List<Long> elapseds = listOfElapseds;
+        List<Long> increments = Lists.newArrayList();
+        long sum = 0;
+        for (int i = 0; i < elapseds.size(); i++) {
+            if (i < elapseds.size()) {
+                sum += elapseds.get(i);
+                increments.add(sum);
+            }
+        }
+        return increments;
+    }
+
     @SneakyThrows
     @Override
     public void afterStepStop(StepResult result) {

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Lazy
-@Scope("singleton")
+@Scope("thread-local")
 public class Exercise1PlaywrightPage extends BasePlaywrightPage {
 
     private static final String BUTTON_1 = "#btnButton1";
