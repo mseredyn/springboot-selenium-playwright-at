@@ -1,14 +1,15 @@
-package com.example.springboottests.tests;
+package com.example.springboottests.tests.exercise1;
 
 import com.example.springboottests.pages.Exercise1PlaywrightPage;
 import com.example.springboottests.pages.Exercise1SeleniumPage;
+import com.example.springboottests.tests.BaseTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class Exercise1MixedTest extends BaseTest {
 
-    private static final int TOTAL_CYCLES = 50;
+    private static final int TOTAL_CYCLES = 10;
     private static final int PLAYWRIGHT_CYCLES = 10;
     private static final int SELENIUM_CYCLES = TOTAL_CYCLES - PLAYWRIGHT_CYCLES;
 

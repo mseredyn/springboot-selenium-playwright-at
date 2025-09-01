@@ -1,57 +1,72 @@
 package com.example.springboottests.config;
 
 import com.microsoft.playwright.*;
-import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 @Configuration
 @Scope("singleton")
-@Lazy
-@DependsOn()
 public class PlaywrightConfig implements DisposableBean {
 
-    @Value("${webdriver.debug}")
-    private String webDriverDebug;
-    @Autowired(required = false)
-    private WebDriver driver;
+    @Autowired
+    private SeleniumWebSocketAdapter seleniumWebSocketAdapter;
 
-    private Playwright playwright;
-    private Browser browser;
-    private BrowserContext browserContext;
-    private Page page;
+    private static final ThreadLocal<Playwright> playwrightThreadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<Browser> browserThreadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<BrowserContext> contextThreadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<Page> pageThreadLocal = new ThreadLocal<>();
 
     @Override
-    public void destroy() throws Exception {
-        page.close();
-        browserContext.close();
-        browser.close();
-        playwright.close();
+    public void destroy() {
+        Page page = pageThreadLocal.get();
+        BrowserContext context = contextThreadLocal.get();
+        Browser browser = browserThreadLocal.get();
+        Playwright playwright = playwrightThreadLocal.get();
+
+        if (page != null) page.close();
+        if (context != null) context.close();
+        if (browser != null) browser.close();
+        if (playwright != null) playwright.close();
+
+        pageThreadLocal.remove();
+        contextThreadLocal.remove();
+        browserThreadLocal.remove();
+        playwrightThreadLocal.remove();
     }
 
-    @Bean
-    public Page getPage() {
+    public void init() {
         Playwright.CreateOptions createOptions = new Playwright.CreateOptions();
-        playwright = Playwright.create(createOptions);
-        if (SeleniumCDP.getCdpCapability() != null) {
-            browser = playwright.chromium().connectOverCDP(SeleniumCDP.getCdpCapability());
+        Playwright playwright = Playwright.create(createOptions);
+        Browser browser;
+        if (seleniumWebSocketAdapter.getCdpCapability() != null) {
+            browser = playwright.chromium().connectOverCDP(seleniumWebSocketAdapter.getCdpCapability());
         } else {
             browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setChannel("chrome"));
         }
-
+        BrowserContext browserContext;
         if (browser.contexts().isEmpty()) {
             browserContext = browser.newContext(new Browser.NewContextOptions());
         } else {
-            browserContext = browser.contexts().get(0);
+            browserContext = browser.contexts().getFirst();
         }
-
+        Page page;
         if (browserContext.pages().isEmpty()) {
             page = browserContext.newPage();
         } else {
-            page = browserContext.pages().get(0);
+            page = browserContext.pages().getFirst();
         }
-        return this.page;
+        playwrightThreadLocal.set(playwright);
+        browserThreadLocal.set(browser);
+        contextThreadLocal.set(browserContext);
+        pageThreadLocal.set(page);
+    }
+
+    public Page getPage() {
+        if(pageThreadLocal.get() == null) {
+            this.init();
+        }
+        return pageThreadLocal.get();
     }
 }

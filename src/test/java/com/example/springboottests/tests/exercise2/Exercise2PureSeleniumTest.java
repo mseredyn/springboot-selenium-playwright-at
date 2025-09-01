@@ -1,6 +1,7 @@
-package com.example.springboottests.tests;
+package com.example.springboottests.tests.exercise2;
 
 import com.example.springboottests.pages.Exercise2SeleniumPage;
+import com.example.springboottests.tests.BaseTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
