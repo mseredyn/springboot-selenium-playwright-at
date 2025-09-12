@@ -32,6 +32,8 @@ public class BaseSeleniumPage {
 
     @Step
     protected WebElement getByUsingSelenium(String selector) {
+        WebDriverWait wait = new WebDriverWait(seleniumConfig.getDriver(), Duration.ofSeconds(30));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(byChooser(selector)));
         return seleniumConfig.getDriver().findElement(byChooser(selector));
     }
 

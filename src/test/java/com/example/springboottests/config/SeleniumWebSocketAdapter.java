@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("singleton")
 public class SeleniumWebSocketAdapter {
-    private static ThreadLocal<String> cdpUrl = ThreadLocal.withInitial(() -> null);
+    private static final ThreadLocal<String> cdpUrl = ThreadLocal.withInitial(() -> null);
 
     public void setCdpCapability(String cdp) {
         cdpUrl.set(cdp);
