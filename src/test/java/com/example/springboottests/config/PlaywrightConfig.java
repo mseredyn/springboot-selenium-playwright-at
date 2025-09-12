@@ -41,13 +41,18 @@ public class PlaywrightConfig implements DisposableBean {
         Playwright playwright = Playwright.create(createOptions);
         Browser browser;
         if (seleniumWebSocketAdapter.getCdpCapability() != null) {
-            browser = playwright.chromium().connectOverCDP(seleniumWebSocketAdapter.getCdpCapability());
+            browser = playwright.chromium()
+                    .connectOverCDP(seleniumWebSocketAdapter.getCdpCapability());
         } else {
-            browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setChannel("chrome"));
+            browser = playwright.chromium()
+                    .launch(new BrowserType.LaunchOptions()
+                            .setHeadless(false)
+                            .setChannel("chrome"));
         }
         BrowserContext browserContext;
         if (browser.contexts().isEmpty()) {
-            browserContext = browser.newContext(new Browser.NewContextOptions());
+            browserContext = browser
+                    .newContext(new Browser.NewContextOptions());
         } else {
             browserContext = browser.contexts().getFirst();
         }
